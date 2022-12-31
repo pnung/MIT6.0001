@@ -9,7 +9,8 @@ def get_permutations(string):
     return set(permutations)
 
 if __name__ == '__main__':
-    example_input = 'sad'
+    example_input = 'abc'
     print('Input:', example_input)
     print('Expected Output:', ['abc', 'acb', 'bac', 'bca', 'cab', 'cba'])
     print('Actual Output:', get_permutations(example_input))
+
