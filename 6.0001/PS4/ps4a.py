@@ -1,40 +1,27 @@
-# Problem Set 4A
-# Name: <your name here>
-# Collaborators:
-# Time Spent: x:xx
+import random
+
 
 def get_permutations(sequence):
-    '''
-    Enumerate all permutations of a given string
+    permutation = ""
+    permutations = []
+    sequence_list = list(sequence)
+    if sequence == permutation:
+        return permutations
+    else:
+        for j in range(len(sequence)):
+            print(sequence_list)
+            permutations.append(str(sequence_list))
+            sequence_list[j], sequence_list[j+1] = sequence_list[j+1], sequence_list[j]
+            if str(sequence_list) in permutations:
+                continue
+            else:
+                permutations.append(str(sequence_list))
+            print(permutations)
 
-    sequence (string): an arbitrary string to permute. Assume that it is a
-    non-empty string.  
 
-    You MUST use recursion for this part. Non-recursive solutions will not be
-    accepted.
-
-    Returns: a list of all permutations of sequence
-
-    Example:
-    >>> get_permutations('abc')
-    ['abc', 'acb', 'bac', 'bca', 'cab', 'cba']
-
-    Note: depending on your implementation, you may return the permutations in
-    a different order than what is listed here.
-    '''
-
-    pass #delete this line and replace with your code here
 
 if __name__ == '__main__':
-#    #EXAMPLE
-#    example_input = 'abc'
-#    print('Input:', example_input)
-#    print('Expected Output:', ['abc', 'acb', 'bac', 'bca', 'cab', 'cba'])
-#    print('Actual Output:', get_permutations(example_input))
-    
-#    # Put three example test cases here (for your sanity, limit your inputs
-#    to be three characters or fewer as you will have n! permutations for a 
-#    sequence of length n)
-
-    pass #delete this line and replace with your code here
-
+   example_input = 'abc'
+   print('Input:', example_input)
+   print('Expected Output:', ['abc', 'acb', 'bac', 'bca', 'cab', 'cba'])
+   print('Actual Output:', get_permutations(example_input))
