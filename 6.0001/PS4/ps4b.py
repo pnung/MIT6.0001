@@ -69,10 +69,7 @@ class Message(object):
         word_list = load_words(WORDLIST_FILENAME)
         self.text = text
         self.valid_words = []
-        # self.valid_words = list(self.text.split(" "))
         copy_words = list(self.text.split(" "))
-        print("Text: ", self.text)
-        print("Words: ", self.valid_words)
         for word in copy_words:
             if is_word(word_list, word):
                 self.valid_words.append(word)
@@ -126,10 +123,19 @@ class Message(object):
         Returns: the message text (string) in which every character is shifted
              down the alphabet by the input shift
         '''
-        pass #delete this line and replace with your code here
+        shift_dict = self.build_shift_dict(shift)
+        print(shift_dict)
+        text = self.get_message_text()
+        encrypted = ""
+        for letter in text:
+            if letter == " ":
+                encrypted += letter
+            else:
+                print("Inside loop: ", letter, shift_dict[letter])
+                encrypted += shift_dict[letter]
 
-message = Message("Test message")
-print(message.build_shift_dict(0))
+message = Message("abc def")
+print(message.apply_shift(2))
 
 
 class PlaintextMessage(Message):
