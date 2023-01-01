@@ -133,11 +133,14 @@ class Message(object):
             if letter == " ":
                 encrypted += letter
             else:
-                print("Inside loop: ", letter, shift_dict[letter])
                 encrypted += shift_dict[letter]
 
+        return encrypted
+
 message = Message("abc def")
-print(message.apply_shift(2))
+encrypted = Message("bcd efg")
+
+
 
 
 class PlaintextMessage(Message):
@@ -157,6 +160,12 @@ class PlaintextMessage(Message):
             self.message_text_encrypted (string, created using shift)
         '''
         self.message_text = text
+        self.valid_words = []
+        copy_words = list(self.text.split(" "))
+        word_list = load_words(WORDLIST_FILENAME)
+        for word in copy_words:
+            if is_word(word_list, word):
+                self.valid_words.append(word)
         self.shift = shift
         self.encryption_dict = self.build_shift_dict(shift)
         self.message_text_encrypted = self.text.apply_shift(self, shift)
@@ -202,7 +211,14 @@ class CiphertextMessage(Message):
             self.message_text (string, determined by input text)
             self.valid_words (list, determined using helper function load_words)
         '''
-        pass #delete this line and replace with your code here
+        super(Message, self).__init__(self.text)
+        self.text = text
+        self.valid_words = []
+        copy_words = list(self.text.split(" "))
+        word_list = load_words(WORDLIST_FILENAME)
+        for word in copy_words:
+            if is_word(word_list, word):
+                self.valid_words.append(word)
 
     def decrypt_message(self):
         '''
@@ -220,7 +236,14 @@ class CiphertextMessage(Message):
         Returns: a tuple of the best shift value used to decrypt the message
         and the decrypted message text using that shift value
         '''
-        pass #delete this line and replace with your code here
+        matches = 0
+        best = ()
+        encrypted_text = self.text
+
+
+
+
+
 
 if __name__ == '__main__':
 
