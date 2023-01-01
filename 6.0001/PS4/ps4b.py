@@ -1,5 +1,6 @@
 import string
 
+wordlist = []
 
 def load_words(file_name):
     '''
@@ -11,14 +12,12 @@ def load_words(file_name):
     Depending on the size of the word list, this function may
     take a while to finish.
     '''
-    print("Loading word list from file...")
     # inFile: file
     inFile = open(file_name, 'r')
+    global wordlist
     # wordlist: list of strings
-    wordlist = []
     for line in inFile:
         wordlist.extend([word.lower() for word in line.split(' ')])
-    print("  ", len(wordlist), "words loaded.")
     return wordlist
 
 
@@ -33,9 +32,9 @@ def is_word(word_list, word):
     Returns: True if word is in word_list, False otherwise
 
     Example:
-    >>> is_word(word_list, 'bat') returns
-    True
-    >>> is_word(word_list, 'asdf') returns
+    # >>> is_word(word_list, 'bat') returns
+    # True
+    # >>> is_word(word_list, 'asdf') returns
     False
     '''
     word = word.lower()
@@ -114,33 +113,17 @@ class Message(object):
         return shift_dict
 
     def apply_shift(self, shift):
-        '''
-        Applies the Caesar Cipher to self.message_text with the input shift.
-        Creates a new string that is self.message_text shifted down the
-        alphabet by some number of characters determined by the input shift        
-        
-        shift (integer): the shift with which to encrypt the message.
-        0 <= shift < 26
-
-        Returns: the message text (string) in which every character is shifted
-             down the alphabet by the input shift
-        '''
         shift_dict = self.build_shift_dict(shift)
-        print(shift_dict)
-        text = self.get_message_text()
-        encrypted = ""
-        for letter in text:
+        shifted_message = ""
+
+        for letter in self.text:
             if letter == " ":
-                encrypted += letter
+                shifted_message += " "
             else:
-                encrypted += shift_dict[letter]
+                shifted_letter = shift_dict.get(letter, letter)
+                shifted_message += shifted_letter
 
-        return encrypted
-
-message = Message("abc def")
-encrypted = Message("bcd efg")
-
-
+        return shifted_message
 
 
 class PlaintextMessage(Message):
@@ -204,14 +187,14 @@ class CiphertextMessage(Message):
     def __init__(self, text):
         '''
         Initializes a CiphertextMessage object
-                
+
         text (string): the message's text
 
         a CiphertextMessage object has two attributes:
             self.message_text (string, determined by input text)
             self.valid_words (list, determined using helper function load_words)
         '''
-        super(Message, self).__init__(self.text)
+        super().__init__(text)
         self.text = text
         self.valid_words = []
         copy_words = list(self.text.split(" "))
@@ -221,56 +204,43 @@ class CiphertextMessage(Message):
                 self.valid_words.append(word)
 
     def decrypt_message(self):
-        '''
-        Decrypt self.message_text by trying every possible shift value
-        and find the "best" one. We will define "best" as the shift that
-        creates the maximum number of real words when we use apply_shift(shift)
-        on the message text. If s is the original shift value used to encrypt
-        the message, then we would expect 26 - s to be the best shift value 
-        for decrypting it.
+        attempts = {}
 
-        Note: if multiple shifts are equally good such that they all create 
-        the maximum number of valid words, you may choose any of those shifts 
-        (and their corresponding decrypted messages) to return
-
-        Returns: a tuple of the best shift value used to decrypt the message
-        and the decrypted message text using that shift value
-        '''
-        copy_message = ""
-        matches = 0
-        best = ()
-        attempts = []
         encrypted = Message(self.text)
-        encrypted_text = encrypted.get_message_text()
-        for i in range(-27):
-            new_encrypt = Message(encrypted.apply_shift(i))
-            copy_message = new_encrypt.get_message_text()
-            if len(new_encrypt.valid_words) > matches:
-                matches = len(new_encrypt.valid_words)
-                attempts.append(i)
-            else:
-                continue
+        for i in range(1, 27):
+            shift = i % 26
+            new_encrypt = Message(encrypted.apply_shift(shift))
+            attempts[shift] = new_encrypt.valid_words
 
-        best = (copy_message, attempts.pop())
-        return
+        best_shift = None
+        best_words = []
+        for shift, words in attempts.items():
+            if len(words) > len(best_words):
+                best_shift, best_words = shift, words
 
-
+        if not best_words:
+            return None, ''
+        else:
+            return best_shift, best_words[0]
 
 
 if __name__ == '__main__':
+    print("Testing")
+    ciphertext = CiphertextMessage('jgnnq')
+    print('Expected Output:', (24, 'hello'))
+    print('Actual Output:', ciphertext.decrypt_message())
 
-#    #Example test case (PlaintextMessage)
-#    plaintext = PlaintextMessage('hello', 2)
-#    print('Expected Output: jgnnq')
-#    print('Actual Output:', plaintext.get_message_text_encrypted())
-#
-#    #Example test case (CiphertextMessage)
-   ciphertext = CiphertextMessage('jgnnq')
-   print('Expected Output:', (24, 'hello'))
-   print('Actual Output:', ciphertext.decrypt_message())
+    # Test with a message that can't be decrypted
+    print("Testing with a message that can't be decrypted:")
+    ciphertext = CiphertextMessage('abcdefghijklmnopqrstuvwxyz')
+    print("Expected Output:", (None, ''))
+    actual_output = ciphertext.decrypt_message()
+    print("Actual Output:", actual_output)
 
-    #TODO: WRITE YOUR TEST CASES HERE
+    # Test with a message that contains only digits
+    print("Testing with a message that contains only digits:")
+    ciphertext = CiphertextMessage('0123456789')
+    print("Expected Output:", (None, ''))
+    actual_output = ciphertext.decrypt_message()
+    print("Actual Output:", actual_output)
 
-    #TODO: best shift value and unencrypted story
-
-    pass
