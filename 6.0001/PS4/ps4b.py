@@ -96,29 +96,24 @@ class Message(object):
         The dictionary maps every uppercase and lowercase letter to a
         character shifted down the alphabet by the input shift. The dictionary
         should have 52 keys of all the uppercase letters and all the lowercase
-        letters only.        
-        
-        shift (integer): the amount by which to shift every letter of the 
+        letters only.
+
+        shift (integer): the amount by which to shift every letter of the
         alphabet. 0 <= shift < 26
 
-        Returns: a dictionary mapping a letter (string) to 
-                 another letter (string). 
+        Returns: a dictionary mapping a letter (string) to
+                 another letter (string).
         '''
-        if shift > 26:
-            print("Shift must be less than 26")
-            return
-
         shift_dict = {}
-        text_copy = self.text
-        text_copy = text_copy.replace(" ", '')
-        for char in text_copy:
-            if char in string.ascii_lowercase or string.ascii_uppercase:
-                shift_dict[char] = 1
-            else:
-                shift_dict[char] = 0
 
-        for key in shift_dict:
-            print(key+":", shift_dict[key])
+        for letter in string.ascii_lowercase:
+            shifted_letter = chr((ord(letter) - ord('a') + shift) % 26 + ord('a'))
+            shift_dict[letter] = shifted_letter
+        for letter in string.ascii_uppercase:
+            shifted_letter = chr((ord(letter) - ord('A') + shift) % 26 + ord('A'))
+            shift_dict[letter] = shifted_letter
+        return shift_dict
+
     def apply_shift(self, shift):
         '''
         Applies the Caesar Cipher to self.message_text with the input shift.
@@ -134,7 +129,8 @@ class Message(object):
         pass #delete this line and replace with your code here
 
 message = Message("Test message")
-print(message.build_shift_dict(1))
+print(message.build_shift_dict(0))
+
 
 class PlaintextMessage(Message):
     def __init__(self, text, shift):
