@@ -219,6 +219,7 @@ class EncryptedSubMessage(SubMessage):
     def get_permutations(self, text):
         permutations = []
         valid_word = None
+
         if len(text) == 1:
             return [text]
         else:
