@@ -106,9 +106,11 @@ class Message(object):
         for letter in string.ascii_lowercase:
             shifted_letter = chr((ord(letter) - ord('a') + shift) % 26 + ord('a'))
             shift_dict[letter] = shifted_letter
+
         for letter in string.ascii_uppercase:
             shifted_letter = chr((ord(letter) - ord('A') + shift) % 26 + ord('A'))
             shift_dict[letter] = shifted_letter
+
         return shift_dict
 
     def apply_shift(self, shift):
@@ -140,6 +142,7 @@ print(message.apply_shift(2))
 
 class PlaintextMessage(Message):
     def __init__(self, text, shift):
+        super(Message, self).__init__(self, text)
         '''
         Initializes a PlaintextMessage object        
         
@@ -152,45 +155,40 @@ class PlaintextMessage(Message):
             self.shift (integer, determined by input shift)
             self.encryption_dict (dictionary, built using shift)
             self.message_text_encrypted (string, created using shift)
-
         '''
-        pass #delete this line and replace with your code here
+        self.message_text = text
+        self.shift = shift
+        self.encryption_dict = self.build_shift_dict(shift)
+        self.message_text_encrypted = self.text.apply_shift(self, shift)
 
     def get_shift(self):
         '''
         Used to safely access self.shift outside of the class
-        
         Returns: self.shift
         '''
-        pass #delete this line and replace with your code here
+
+        return self.shift
 
     def get_encryption_dict(self):
-        '''
-        Used to safely access a copy self.encryption_dict outside of the class
-        
-        Returns: a COPY of self.encryption_dict
-        '''
-        pass #delete this line and replace with your code here
+        copy_encryption_dict = self.encryption_dict.copy()
+        return copy_encryption_dict
 
     def get_message_text_encrypted(self):
-        '''
-        Used to safely access self.message_text_encrypted outside of the class
-        
-        Returns: self.message_text_encrypted
-        '''
-        pass #delete this line and replace with your code here
+        return self.message_text_encrypted
 
     def change_shift(self, shift):
-        '''
-        Changes self.shift of the PlaintextMessage and updates other 
-        attributes determined by shift.        
-        
+        """
+        Changes self.shift of the PlaintextMessage and updates other
+        attributes determined by shift.
+
         shift (integer): the new shift that should be associated with this message.
         0 <= shift < 26
 
         Returns: nothing
-        '''
-        pass #delete this line and replace with your code here
+        """
+        self.shift = shift
+        self.encryption_dict = self.build_shift_dict(shift)
+        self.message_text_encrypted = self.text.apply_shift(self, shift)
 
 
 class CiphertextMessage(Message):
