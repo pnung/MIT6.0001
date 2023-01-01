@@ -1,7 +1,8 @@
-import string
 from ps4a import get_permutations
 
 ### HELPER CODE ###
+
+
 def load_words(file_name):
     '''
     file_name (string): the name of the file containing 
@@ -12,7 +13,7 @@ def load_words(file_name):
     Depending on the size of the word list, this function may
     take a while to finish.
     '''
-    
+
     # inFile: file
     inFile = open(file_name, 'r')
     # wordlist: list of strings
@@ -20,6 +21,7 @@ def load_words(file_name):
     for line in inFile:
         wordlist.extend([word.lower() for word in line.split(' ')])
     return wordlist
+
 
 def is_word(word_list, word):
     '''
@@ -51,6 +53,7 @@ VOWELS_LOWER = 'aeiou'
 VOWELS_UPPER = 'AEIOU'
 CONSONANTS_LOWER = 'bcdfghjklmnpqrstvwxyz'
 CONSONANTS_UPPER = 'BCDFGHJKLMNPQRSTVWXYZ'
+
 
 class SubMessage(object):
     def __init__(self, text):
@@ -193,7 +196,6 @@ class EncryptedSubMessage(SubMessage):
         word_list = load_words(WORDLIST_FILENAME)
 
         max_valid_words = 0
-        best_permutation = None
         best_decrypted_text = None
 
         for permutation in get_permutations('aeiou'):
@@ -208,7 +210,6 @@ class EncryptedSubMessage(SubMessage):
 
             if valid_words > max_valid_words:
                 max_valid_words = valid_words
-                best_permutation = permutation
                 best_decrypted_text = decrypted_text  # update best_decrypted_text here
 
         if max_valid_words == 0:
@@ -236,6 +237,7 @@ class EncryptedSubMessage(SubMessage):
             return self.message_text
         else:
             return valid_word
+
 
 if __name__ == '__main__':
     print("test")
