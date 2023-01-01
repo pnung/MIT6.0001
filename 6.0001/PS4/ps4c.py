@@ -92,37 +92,42 @@ class SubMessage(object):
     def build_transpose_dict(self, vowels_permutation):
         '''
         vowels_permutation (string): a string containing a permutation of vowels (a, e, i, o, u)
-        
+
         Creates a dictionary that can be used to apply a cipher to a letter.
         The dictionary maps every uppercase and lowercase letter to an
-        uppercase and lowercase letter, respectively. Vowels are shuffled 
-        according to vowels_permutation. The first letter in vowels_permutation 
+        uppercase and lowercase letter, respectively. Vowels are shuffled
+        according to vowels_permutation. The first letter in vowels_permutation
         corresponds to a, the second to e, and so on in the order a, e, i, o, u.
-        The consonants remain the same. The dictionary should have 52 
+        The consonants remain the same. The dictionary should have 52
         keys of all the uppercase letters and all the lowercase letters.
 
         Example: When input "eaiuo":
         Mapping is a->e, e->a, i->i, o->u, u->o
         and "Hello World!" maps to "Hallu Wurld!"
 
-        Returns: a dictionary mapping a letter (string) to 
-                 another letter (string). 
+        Returns: a dictionary mapping a letter (string) to
+                 another letter (string).
         '''
         transpose_dict = {}
-        vowels = 'aeiou'
+        vowels_lower = 'aeiou'
+        vowels_upper = 'AEIOU'
+        consonants_lower = 'bcdfghjklmnpqrstvwxyz'
+        consonants_upper = 'BCDFGHJKLMNPQRSTVWXYZ'
 
-        # Map the vowels according to the permutation
-        for i in range(len(vowels)):
-            transpose_dict[vowels[i]] = vowels_permutation[i]
-            transpose_dict[vowels[i].upper()] = vowels_permutation[i].upper()
+        # Map the lowercase vowels according to the permutation
+        for i in range(len(vowels_lower)):
+            transpose_dict[vowels_lower[i]] = vowels_permutation[i]
 
-        # Map the consonants to themselves
-        for letter in string.ascii_lowercase:
-            if letter not in vowels:
-                transpose_dict[letter] = letter
-        for letter in string.ascii_uppercase:
-            if letter not in vowels:
-                transpose_dict[letter] = letter
+        # Map the uppercase vowels according to the permutation
+        for i in range(len(vowels_upper)):
+            transpose_dict[vowels_upper[i]] = vowels_permutation[i].upper()
+
+        # Map the lowercase consonants to themselves
+        for letter in consonants_lower:
+            transpose_dict[letter] = letter
+
+        for letter in consonants_upper:
+            transpose_dict[letter] = letter
 
         return transpose_dict
 
@@ -155,7 +160,6 @@ class EncryptedSubMessage(SubMessage):
             if is_word(word_list, word):
                 self.valid_words.append(word)
 
-
     def decrypt_message(self):
         '''
         Attempt to decrypt the encrypted message
@@ -171,24 +175,23 @@ class EncryptedSubMessage(SubMessage):
         one of them.
 
         Returns: the best decrypted message
-
-        Hint: use your function from Part 4A
         '''
 
         vowels_permutations = get_permutations('aeiou')
+        word_list = load_words(WORDLIST_FILENAME)
 
         max_valid_words = 0
         best_permutation = None
+        best_decrypted_text = None
 
         for permutation in vowels_permutations:
-
             transpose_dict = self.build_transpose_dict(permutation)
             decrypted_text = self.apply_transpose(transpose_dict)
             decrypted_words = decrypted_text.split()
             valid_words = 0
 
             for word in decrypted_words:
-                if is_word(self.valid_words, word):
+                if is_word(word_list, word):
                     valid_words += 1
 
             if valid_words > max_valid_words:
@@ -197,7 +200,6 @@ class EncryptedSubMessage(SubMessage):
 
         if max_valid_words == 0:
             return self.get_message_text()
-
         else:
             transpose_dict = self.build_transpose_dict(best_permutation)
             return self.apply_transpose(transpose_dict)
@@ -231,6 +233,27 @@ if __name__ == '__main__':
     print("Original message:", message.get_message_text(), "Permutation:", permutation)
     print("Expected encryption:", "Hallu Wurld!")
     print("Actual encryption:", message.apply_transpose(enc_dict))
-    # TODO: WRITE YOUR TEST CASES HERE
 
+    message = SubMessage("Hello World!")
+    permutation = "zyxwv"
+    enc_dict = message.build_transpose_dict(permutation)
+    expected_output = "Hvllu Wurld!"
+    print("Original message:", message.get_message_text(), "Permutation:", permutation)
+    print("Expected encryption:", expected_output)
+    print("Actual encryption:", message.apply_transpose(enc_dict))
 
+    # Test decrypting a message encrypted with a transpose dictionary with a->e, e->a, i->i, o->u, u->o
+    message = EncryptedSubMessage("Hallu Wurld!")
+    permutation = "eaiuo"
+    expected_output = "Hello World!"
+    print("Original encrypted message:", message.get_message_text(), "Permutation:", permutation)
+    print("Expected decryption:", expected_output)
+    print("Actual decryption:", message.decrypt_message())
+
+    # Test decrypting a message encrypted with a transpose dictionary with a->z, e->y, i->x, o->w, u->v
+    message = EncryptedSubMessage("Hvllu Wurld!")
+    permutation = "zyxwv"
+    expected_output = "Hello World!"
+    print("Original encrypted message:", message.get_message_text(), "Permutation:", permutation)
+    print("Expected decryption:", expected_output)
+    print("Actual decryption:", message.decrypt_message())
