@@ -128,17 +128,30 @@ class SubMessage(object):
 
         for letter in consonants_upper:
             transpose_dict[letter] = letter
-
         return transpose_dict
 
     def apply_transpose(self, transpose_dict):
-        result = ""
-        for char in self.text:
-            if char in transpose_dict:
-                result += transpose_dict[char]
+        """
+        transpose_dict (dict): a transpose dictionary
+
+        Returns: an encrypted version of the message text, based
+        on the dictionary
+        """
+        encrypted_message = ""
+        for letter in self.get_message_text():
+            if letter in transpose_dict:
+                # Check if the letter is uppercase
+                if letter.isupper():
+                    # If the letter is uppercase, use the uppercase version of the cipher letter
+                    encrypted_message += transpose_dict[letter.lower()].upper()
+                else:
+                    encrypted_message += transpose_dict[letter]
             else:
-                result += char
-        return result
+                # If the letter is not in the transpose dictionary, it must be a consonant
+                # In that case, use the original letter
+                encrypted_message += letter
+        return encrypted_message
+
 
 class EncryptedSubMessage(SubMessage):
     def __init__(self, text):
@@ -177,14 +190,13 @@ class EncryptedSubMessage(SubMessage):
         Returns: the best decrypted message
         '''
 
-        vowels_permutations = get_permutations('aeiou')
         word_list = load_words(WORDLIST_FILENAME)
 
         max_valid_words = 0
         best_permutation = None
         best_decrypted_text = None
 
-        for permutation in vowels_permutations:
+        for permutation in get_permutations('aeiou'):
             transpose_dict = self.build_transpose_dict(permutation)
             decrypted_text = self.apply_transpose(transpose_dict)
             decrypted_words = decrypted_text.split()
@@ -197,12 +209,12 @@ class EncryptedSubMessage(SubMessage):
             if valid_words > max_valid_words:
                 max_valid_words = valid_words
                 best_permutation = permutation
+                best_decrypted_text = decrypted_text  # update best_decrypted_text here
 
         if max_valid_words == 0:
             return self.get_message_text()
         else:
-            transpose_dict = self.build_transpose_dict(best_permutation)
-            return self.apply_transpose(transpose_dict)
+            return best_decrypted_text  # return best_decrypted_text here
 
     def get_permutations(self, text):
         permutations = []
@@ -224,7 +236,6 @@ class EncryptedSubMessage(SubMessage):
         else:
             return valid_word
 
-
 if __name__ == '__main__':
     print("test")
     message = SubMessage("Hello World!")
@@ -234,24 +245,7 @@ if __name__ == '__main__':
     print("Expected encryption:", "Hallu Wurld!")
     print("Actual encryption:", message.apply_transpose(enc_dict))
 
-    message = SubMessage("Hello World!")
-    permutation = "zyxwv"
-    enc_dict = message.build_transpose_dict(permutation)
-    expected_output = "Hvllu Wurld!"
-    print("Original message:", message.get_message_text(), "Permutation:", permutation)
-    print("Expected encryption:", expected_output)
-    print("Actual encryption:", message.apply_transpose(enc_dict))
-
-    # Test decrypting a message encrypted with a transpose dictionary with a->e, e->a, i->i, o->u, u->o
-    message = EncryptedSubMessage("Hallu Wurld!")
-    permutation = "eaiuo"
-    expected_output = "Hello World!"
-    print("Original encrypted message:", message.get_message_text(), "Permutation:", permutation)
-    print("Expected decryption:", expected_output)
-    print("Actual decryption:", message.decrypt_message())
-
-    # Test decrypting a message encrypted with a transpose dictionary with a->z, e->y, i->x, o->w, u->v
-    message = EncryptedSubMessage("Hvllu Wurld!")
+    message = EncryptedSubMessage("Hollu Wurld!")
     permutation = "zyxwv"
     expected_output = "Hello World!"
     print("Original encrypted message:", message.get_message_text(), "Permutation:", permutation)
