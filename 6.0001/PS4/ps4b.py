@@ -1,11 +1,6 @@
-# Problem Set 4B
-# Name: <your name here>
-# Collaborators:
-# Time Spent: x:xx
-
 import string
 
-### HELPER CODE ###
+
 def load_words(file_name):
     '''
     file_name (string): the name of the file containing 
@@ -26,6 +21,7 @@ def load_words(file_name):
     print("  ", len(wordlist), "words loaded.")
     return wordlist
 
+
 def is_word(word_list, word):
     '''
     Determines if word is a valid word, ignoring
@@ -33,7 +29,7 @@ def is_word(word_list, word):
 
     word_list (list): list of words in the dictionary.
     word (string): a possible word.
-    
+
     Returns: True if word is in word_list, False otherwise
 
     Example:
@@ -46,6 +42,7 @@ def is_word(word_list, word):
     word = word.strip(" !@#$%^&*()-_+={}[]|\:;'<>?,./\"")
     return word in word_list
 
+
 def get_story_string():
     """
     Returns: a story in encrypted text.
@@ -55,30 +52,33 @@ def get_story_string():
     f.close()
     return story
 
-### END HELPER CODE ###
-
 WORDLIST_FILENAME = 'words.txt'
+
 
 class Message(object):
     def __init__(self, text):
         '''
         Initializes a Message object
-                
+
         text (string): the message's text
 
         a Message object has two attributes:
             self.message_text (string, determined by input text)
             self.valid_words (list, determined using helper function load_words)
         '''
-        pass #delete this line and replace with your code here
+        word_list = load_words(WORDLIST_FILENAME)
+        self.text = text
+        self.valid_words = []
+        # self.valid_words = list(self.text.split(" "))
+        copy_words = list(self.text.split(" "))
+        print("Text: ", self.text)
+        print("Words: ", self.valid_words)
+        for word in copy_words:
+            if is_word(word_list, word):
+                self.valid_words.append(word)
 
     def get_message_text(self):
-        '''
-        Used to safely access self.message_text outside of the class
-        
-        Returns: self.message_text
-        '''
-        pass #delete this line and replace with your code here
+        return self.text
 
     def get_valid_words(self):
         '''
@@ -87,7 +87,8 @@ class Message(object):
         
         Returns: a COPY of self.valid_words
         '''
-        pass #delete this line and replace with your code here
+        copy_valid_words = self.valid_words.copy()
+        return copy_valid_words
 
     def build_shift_dict(self, shift):
         '''
@@ -103,8 +104,21 @@ class Message(object):
         Returns: a dictionary mapping a letter (string) to 
                  another letter (string). 
         '''
-        pass #delete this line and replace with your code here
+        if shift > 26:
+            print("Shift must be less than 26")
+            return
 
+        shift_dict = {}
+        text_copy = self.text
+        text_copy = text_copy.replace(" ", '')
+        for char in text_copy:
+            if char in string.ascii_lowercase or string.ascii_uppercase:
+                shift_dict[char] = 1
+            else:
+                shift_dict[char] = 0
+
+        for key in shift_dict:
+            print(key+":", shift_dict[key])
     def apply_shift(self, shift):
         '''
         Applies the Caesar Cipher to self.message_text with the input shift.
@@ -118,6 +132,9 @@ class Message(object):
              down the alphabet by the input shift
         '''
         pass #delete this line and replace with your code here
+
+message = Message("Test message")
+print(message.build_shift_dict(1))
 
 class PlaintextMessage(Message):
     def __init__(self, text, shift):
