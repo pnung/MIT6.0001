@@ -101,29 +101,23 @@ class PhraseTrigger(Trigger):
 
     @abstractmethod
     def is_phrase_in(self, text: str) -> bool:
-        phrase_in = False
-        phrase = list(self.phrase)
-        text_list = list(text)
-        letters_in_phrase = ""
+        text_list = text.lower().split(" ")
+        phrase = self.phrase.lower().split(" ")
+        matching_words = []
 
-        for i in range(len(text_list)):
-            if text_list[i] or text[i].lower() or text[i].upper() in phrase:
-                letters_in_phrase += text_list[i]
-            elif text_list[i] == " ":
-                if text_list[i+1] == " ":
-                    return False
-                else:
-                    letters_in_phrase += text_list[i]
-            elif text_list[i] in string.punctuation:
-                continue
-
-        print(letters_in_phrase)
-
-        return phrase_in
+        for word in text_list:
+            word = word.translate(str.maketrans('', '', string.punctuation))
+            if word in phrase:
+                matching_words.append(word)
+        if len(matching_words) != len(phrase):
+            return False
+        if matching_words == phrase:
+            return True
+        return False
 
 
-phrase_trigger = PhraseTrigger("PURPLE COW")
-print(phrase_trigger.is_phrase_in("PURPLE COW"))
+phrase_trigger = PhraseTrigger("purple cow")
+print(phrase_trigger.is_phrase_in("The purple blob over there is a cow."))
 
 
 # Problem 3
