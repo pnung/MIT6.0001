@@ -8,13 +8,13 @@ from datetime import datetime
 import pytz
 
 
-#-----------------------------------------------------------------------
+# -----------------------------------------------------------------------
 
-#======================
+# ======================
 # Code for retrieving and parsing
 # Google and Yahoo News feeds
 # Do not change this code
-#======================
+# ======================
 
 def process(url):
     """
@@ -34,8 +34,8 @@ def process(url):
         try:
             pubdate = datetime.strptime(pubdate, "%a, %d %b %Y %H:%M:%S %Z")
             pubdate.replace(tzinfo=pytz.timezone("GMT"))
-          #  pubdate = pubdate.astimezone(pytz.timezone('EST'))
-          #  pubdate.replace(tzinfo=None)
+        #  pubdate = pubdate.astimezone(pytz.timezone('EST'))
+        #  pubdate.replace(tzinfo=None)
         except ValueError:
             pubdate = datetime.strptime(pubdate, "%a, %d %b %Y %H:%M:%S %z")
 
@@ -43,13 +43,14 @@ def process(url):
         ret.append(newsStory)
     return ret
 
-#======================
+
+# ======================
 # Data structure design
-#======================
+# ======================
 
 # Problem 1
 
-class NewsStory:
+class NewsStory(object):
     def __int__(self, GUID: str, title: str, description: str, link: str, pubdate: datetime):
         self.GUID = GUID
         self.title = title
@@ -73,10 +74,9 @@ class NewsStory:
         return self.pubdate
 
 
-
-#======================
+# ======================
 # Triggers
-#======================
+# ======================
 
 class Trigger(object):
     def evaluate(self, story):
@@ -84,19 +84,28 @@ class Trigger(object):
         Returns True if an alert should be generated
         for the given news item, or False otherwise.
         """
+
         # DO NOT CHANGE THIS!
         raise NotImplementedError
+
 
 # PHRASE TRIGGERS
 
 # Problem 2
 # TODO: PhraseTrigger
+class PhraseTrigger(Trigger):
+    def __int__(self):
+        super(Trigger, self).__int__()
 
 # Problem 3
 # TODO: TitleTrigger
+class TitleTrigger(PhraseTrigger):
+    pass
 
 # Problem 4
 # TODO: DescriptionTrigger
+class DescriptionTrigger(PhraseTrigger):
+    pass
 
 # TIME TRIGGERS
 
@@ -105,26 +114,38 @@ class Trigger(object):
 # Constructor:
 #        Input: Time has to be in EST and in the format of "%d %b %Y %H:%M:%S".
 #        Convert time from string to a datetime before saving it as an attribute.
+class TimeTrigger(Trigger):
+    pass
 
 # Problem 6
 # TODO: BeforeTrigger and AfterTrigger
+class BeforeTrigger(TimeTrigger):
+    pass
+class AfterTrigger(TimeTrigger):
+    pass
 
 
 # COMPOSITE TRIGGERS
 
 # Problem 7
 # TODO: NotTrigger
+class NotTrigger(Trigger):
+    pass
 
 # Problem 8
 # TODO: AndTrigger
+class AndTrigger(Trigger):
+    pass
 
 # Problem 9
 # TODO: OrTrigger
+class OrTrigger(Trigger):
+    pass
 
 
-#======================
+# ======================
 # Filtering
-#======================
+# ======================
 
 # Problem 10
 def filter_stories(stories, triggerlist):
@@ -139,10 +160,9 @@ def filter_stories(stories, triggerlist):
     return stories
 
 
-
-#======================
+# ======================
 # User-Specified Triggers
-#======================
+# ======================
 # Problem 11
 def read_trigger_config(filename):
     """
@@ -164,11 +184,11 @@ def read_trigger_config(filename):
     # line is the list of lines that you need to parse and for which you need
     # to build triggers
 
-    print(lines) # for now, print it so you see what it contains!
+    print(lines)  # for now, print it so you see what it contains!
 
 
+SLEEPTIME = 120  # seconds -- how often we poll
 
-SLEEPTIME = 120 #seconds -- how often we poll
 
 def main_thread(master):
     # A sample trigger list - you might need to change the phrases to correspond
@@ -183,36 +203,36 @@ def main_thread(master):
         # Problem 11
         # TODO: After implementing read_trigger_config, uncomment this line 
         # triggerlist = read_trigger_config('triggers.txt')
-        
+
         # HELPER CODE - you don't need to understand this!
         # Draws the popup window that displays the filtered stories
         # Retrieves and filters the stories from the RSS feeds
         frame = Frame(master)
         frame.pack(side=BOTTOM)
         scrollbar = Scrollbar(master)
-        scrollbar.pack(side=RIGHT,fill=Y)
+        scrollbar.pack(side=RIGHT, fill=Y)
 
         t = "Google & Yahoo Top News"
         title = StringVar()
         title.set(t)
         ttl = Label(master, textvariable=title, font=("Helvetica", 18))
         ttl.pack(side=TOP)
-        cont = Text(master, font=("Helvetica",14), yscrollcommand=scrollbar.set)
+        cont = Text(master, font=("Helvetica", 14), yscrollcommand=scrollbar.set)
         cont.pack(side=BOTTOM)
         cont.tag_config("title", justify='center')
         button = Button(frame, text="Exit", command=root.destroy)
         button.pack(side=BOTTOM)
         guidShown = []
+
         def get_cont(newstory):
             if newstory.get_guid() not in guidShown:
-                cont.insert(END, newstory.get_title()+"\n", "title")
+                cont.insert(END, newstory.get_title() + "\n", "title")
                 cont.insert(END, "\n---------------------------------------------------------------\n", "title")
                 cont.insert(END, newstory.get_description())
                 cont.insert(END, "\n*********************************************************************\n", "title")
                 guidShown.append(newstory.get_guid())
 
         while True:
-
             print("Polling . . .", end=' ')
             # Get stories from Google's Top Stories RSS news feed
             stories = process("http://news.google.com/news?output=rss")
@@ -224,7 +244,6 @@ def main_thread(master):
 
             list(map(get_cont, stories))
             scrollbar.config(command=cont.yview)
-
 
             print("Sleeping...")
             time.sleep(SLEEPTIME)
@@ -239,4 +258,3 @@ if __name__ == '__main__':
     t = threading.Thread(target=main_thread, args=(root,))
     t.start()
     root.mainloop()
-
