@@ -6,6 +6,7 @@ from project_util import translate_html
 from mtTkinter import *
 from datetime import datetime
 import pytz
+from abc import ABC, abstractmethod
 
 
 # -----------------------------------------------------------------------
@@ -94,18 +95,48 @@ class Trigger(object):
 # Problem 2
 # TODO: PhraseTrigger
 class PhraseTrigger(Trigger):
-    def __int__(self):
-        super(Trigger, self).__int__()
+    def __init__(self, phrase: str):
+        self.phrase = phrase
+        self.phrase_list = []
+
+    @abstractmethod
+    def is_phrase_in(self, text: str) -> bool:
+        phrase_in = False
+        phrase = list(self.phrase)
+        text_list = list(text)
+        letters_in_phrase = ""
+
+        for i in range(len(text_list)):
+            if text_list[i] or text[i].lower() or text[i].upper() in phrase:
+                letters_in_phrase += text_list[i]
+            elif text_list[i] == " ":
+                if text_list[i+1] == " ":
+                    return False
+                else:
+                    letters_in_phrase += text_list[i]
+            elif text_list[i] in string.punctuation:
+                continue
+
+        print(letters_in_phrase)
+
+        return phrase_in
+
+
+phrase_trigger = PhraseTrigger("PURPLE COW")
+print(phrase_trigger.is_phrase_in("PURPLE COW"))
+
 
 # Problem 3
 # TODO: TitleTrigger
 class TitleTrigger(PhraseTrigger):
     pass
 
+
 # Problem 4
 # TODO: DescriptionTrigger
 class DescriptionTrigger(PhraseTrigger):
     pass
+
 
 # TIME TRIGGERS
 
@@ -117,10 +148,13 @@ class DescriptionTrigger(PhraseTrigger):
 class TimeTrigger(Trigger):
     pass
 
+
 # Problem 6
 # TODO: BeforeTrigger and AfterTrigger
 class BeforeTrigger(TimeTrigger):
     pass
+
+
 class AfterTrigger(TimeTrigger):
     pass
 
@@ -132,10 +166,12 @@ class AfterTrigger(TimeTrigger):
 class NotTrigger(Trigger):
     pass
 
+
 # Problem 8
 # TODO: AndTrigger
 class AndTrigger(Trigger):
     pass
+
 
 # Problem 9
 # TODO: OrTrigger
