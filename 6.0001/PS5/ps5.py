@@ -1,8 +1,3 @@
-# 6.0001/6.00 Problem Set 5 - RSS Feed Filter
-# Name:
-# Collaborators:
-# Time:
-
 import feedparser
 import string
 import time
@@ -54,7 +49,29 @@ def process(url):
 
 # Problem 1
 
-# TODO: NewsStory
+class NewsStory:
+    def __int__(self, GUID: str, title: str, description: str, link: str, pubdate: datetime):
+        self.GUID = GUID
+        self.title = title
+        self.description = description
+        self.link = link
+        self.pubdate = pubdate
+
+    def get_guid(self):
+        return self.GUID
+
+    def get_title(self):
+        return self.title
+
+    def get_description(self):
+        return self.description
+
+    def get_link(self):
+        return self.link
+
+    def get_pubdate(self):
+        return self.pubdate
+
 
 
 #======================
