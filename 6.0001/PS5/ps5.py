@@ -11,7 +11,7 @@ from project_util import translate_html
 from mtTkinter import *
 from datetime import datetime
 import pytz
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 
 # -----------------------------------------------------------------------
@@ -133,7 +133,6 @@ class PhraseTrigger(Trigger):
 
 
 # Problem 3
-# TODO: TitleTrigger
 class TitleTrigger(PhraseTrigger):
     def evaluate(self, story):
         return self.is_phrase_in(story.get_title())
@@ -149,7 +148,6 @@ class DescriptionTrigger(PhraseTrigger):
 # TIME TRIGGERS
 
 # Problem 5
-# TODO: TimeTrigger
 # Constructor:
 #        Input: Time has to be in EST and in the format of "%d %b %Y %H:%M:%S".
 #        Convert time from string to a datetime before saving it as an attribute.
@@ -163,7 +161,6 @@ class TimeTrigger(Trigger):
     # Problem 6
 
 
-# TODO: BeforeTrigger and AfterTrigger
 class BeforeTrigger(TimeTrigger):
     def evaluate(self, story):
         return story.get_pubdate().replace(tzinfo=pytz.timezone("EST")) < self.pubtime
@@ -177,7 +174,6 @@ class AfterTrigger(TimeTrigger):
 # COMPOSITE TRIGGERS
 
 # Problem 7
-# TODO: NotTrigger
 class NotTrigger(Trigger):
     def __init__(self, otherTrigger):
         self.otherTrigger = otherTrigger
@@ -187,7 +183,6 @@ class NotTrigger(Trigger):
 
 
 # Problem 8
-# TODO: AndTrigger
 class AndTrigger(Trigger):
     def __int__(self, trigger1, trigger2):
         self.trigger1 = trigger1
@@ -198,7 +193,6 @@ class AndTrigger(Trigger):
 
 
 # Problem 9
-# TODO: OrTrigger
 class OrTrigger(Trigger):
     def __int__(self, trigger1, trigger2):
         self.trigger1 = trigger1
@@ -213,18 +207,15 @@ class OrTrigger(Trigger):
 # ======================
 
 # Problem 10
-def filter_stories(stories, triggerlist):
+def filter_stories(stories, trigger_list):
     """
     Takes in a list of NewsStory instances.
 
     Returns: a list of only the stories for which a trigger in triggerlist fires.
     """
     valid_stories = []
-    # TODO: Problem 10
-    # This is a placeholder
-    # (we're just returning all the stories, with no filtering)
     for story in stories:
-        for trigger in triggerlist:
+        for trigger in trigger_list:
             if trigger.evaluate(story):
                 valid_stories.append(story)
                 break
@@ -255,8 +246,26 @@ def read_trigger_config(filename):
     # TODO: Problem 11
     # line is the list of lines that you need to parse and for which you need
     # to build triggers
-
-    print(lines)  # for now, print it so you see what it contains!
+    trigger_dictionary = {}
+    trigger_list = []
+    for i in range(len(lines)):
+        trig = lines[i].split(',')
+        if trig[1] == 'TITLE':
+            trigger_dictionary[trig[0]] = TitleTrigger(trig[2])
+        elif trig[1] == 'DESCRIPTION':
+            trigger_dictionary[trig[0]] = DescriptionTrigger(trig[2])
+        elif trig[1] == 'AFTER':
+            trigger_dictionary[trig[0]] = AfterTrigger(trig[2])
+        elif trig[1] == 'BEFORE':
+            trigger_dictionary[trig[0]] = BeforeTrigger(trig[2])
+        elif trig[1] == 'NOT':
+            trigger_dictionary[trig[0]] = NotTrigger(trig[2])
+        elif trig[1] == 'AND':
+            trigger_dictionary[trig[0]] = AndTrigger(trigger_dictionary[trig[2]], trigger_dictionary[trig[3]])
+        elif trig[0] == 'ADD':
+            for x in range(1, len(trig)):
+                trigger_list.append(trigger_dictionary[trig[x]])
+    return trigger_list
 
 
 SLEEPTIME = 120  # seconds -- how often we poll
@@ -273,8 +282,8 @@ def main_thread(master):
         triggerlist = [t1, t4]
 
         # Problem 11
-        # TODO: After implementing read_trigger_config, uncomment this line 
-        # triggerlist = read_trigger_config('triggers.txt')
+        # TODO: After implementing read_trigger_config, uncomment this line
+        triggerlist = read_trigger_config('triggers.txt')
 
         # HELPER CODE - you don't need to understand this!
         # Draws the popup window that displays the filtered stories
@@ -307,10 +316,10 @@ def main_thread(master):
         while True:
             print("Polling . . .", end=' ')
             # Get stories from Google's Top Stories RSS news feed
-            stories = process("http://news.google.com/news?output=rss")
+            stories = process("https://news.google.com/news?output=rss")
 
             # Get stories from Yahoo's Top Stories RSS news feed
-            stories.extend(process("http://news.yahoo.com/rss/topstories"))
+            stories.extend(process("https://news.yahoo.com/rss/topstories"))
 
             stories = filter_stories(stories, triggerlist)
 
