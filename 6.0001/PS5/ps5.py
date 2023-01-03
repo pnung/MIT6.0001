@@ -200,7 +200,12 @@ class AndTrigger(Trigger):
 # Problem 9
 # TODO: OrTrigger
 class OrTrigger(Trigger):
-    pass
+    def __int__(self, trigger1, trigger2):
+        self.trigger1 = trigger1
+        self.trigger2 = trigger2
+
+    def evaluate(self, story):
+        return self.trigger1.evalate(story) or self.trigger2.evaluate(story)
 
 
 # ======================
@@ -218,8 +223,8 @@ def filter_stories(stories, triggerlist):
     # TODO: Problem 10
     # This is a placeholder
     # (we're just returning all the stories, with no filtering)
-    for trigger in triggerlist:
-        for story in stories:
+    for story in stories:
+        for trigger in triggerlist:
             if trigger.evaluate(story):
                 valid_stories.append(story)
                 break
@@ -320,9 +325,8 @@ def main_thread(master):
 
 
 if __name__ == '__main__':
-    pass
-    # root = Tk()
-    # root.title("Some RSS parser")
-    # t = threading.Thread(target=main_thread, args=(root,))
-    # t.start()
-    # root.mainloop()
+    root = Tk()
+    root.title("Some RSS parser")
+    t = threading.Thread(target=main_thread, args=(root,))
+    t.start()
+    root.mainloop()
