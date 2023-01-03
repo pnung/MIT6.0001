@@ -1,3 +1,8 @@
+# 6.0001/6.00 Problem Set 5 - RSS Feed Filter
+# Name: Pau Nung
+# Collaborators: N/A
+# Time: A Good Bit
+
 import feedparser
 import string
 import time
@@ -94,10 +99,10 @@ class Trigger(object):
 
 # Problem 2
 # TODO: PhraseTrigger
+
 class PhraseTrigger(Trigger):
     def __init__(self, phrase: str):
         self.phrase = phrase
-        self.phrase_list = []
 
     @abstractmethod
     def is_phrase_in(self, text):
@@ -107,12 +112,11 @@ class PhraseTrigger(Trigger):
                 text = text.replace(letter, ' ')
 
         text_list = text.split(' ')
-        print(text_list)
 
         while '' in text_list:
             text_list.remove('')
 
-        phrase_list = self.phrase.split()
+        phrase_list = self.phrase.lower().split()
         matches = []
         for word in phrase_list:
             for i, char in enumerate(text_list):
@@ -131,13 +135,15 @@ class PhraseTrigger(Trigger):
 # Problem 3
 # TODO: TitleTrigger
 class TitleTrigger(PhraseTrigger):
-    pass
+    def evaluate(self, story):
+        return self.is_phrase_in(story.get_title())
 
 
 # Problem 4
 # TODO: DescriptionTrigger
 class DescriptionTrigger(PhraseTrigger):
-    pass
+    def evaluate(self, story):
+        return self.is_phrase_in(story.get_description())
 
 
 # TIME TRIGGERS
@@ -148,14 +154,18 @@ class DescriptionTrigger(PhraseTrigger):
 #        Input: Time has to be in EST and in the format of "%d %b %Y %H:%M:%S".
 #        Convert time from string to a datetime before saving it as an attribute.
 class TimeTrigger(Trigger):
-    pass
+    def __int__(self, d: str, pubtime):
+        date_time_format = '%d:%b:%Y:%H:%M:%S'
+        pubtime = datetime.strptime(pubtime, date_time_format)
+        pubtime = pubtime.replace(tzinfo=pytz.timezone("EST"))
+        self.pubtime = pubtime
+
+    # Problem 6
 
 
-# Problem 6
 # TODO: BeforeTrigger and AfterTrigger
 class BeforeTrigger(TimeTrigger):
     pass
-
 
 class AfterTrigger(TimeTrigger):
     pass
