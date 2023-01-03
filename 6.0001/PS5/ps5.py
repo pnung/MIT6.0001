@@ -154,21 +154,24 @@ class DescriptionTrigger(PhraseTrigger):
 #        Input: Time has to be in EST and in the format of "%d %b %Y %H:%M:%S".
 #        Convert time from string to a datetime before saving it as an attribute.
 class TimeTrigger(Trigger):
-    def __int__(self, d: str, pubtime):
+    def __int__(self, d: str, pubbedtime):
         date_time_format = '%d:%b:%Y:%H:%M:%S'
-        pubtime = datetime.strptime(pubtime, date_time_format)
-        pubtime = pubtime.replace(tzinfo=pytz.timezone("EST"))
-        self.pubtime = pubtime
+        pubbedtime = datetime.strptime(pubbedtime, date_time_format)
+        pubbedtime = pubbedtime.replace(tzinfo=pytz.timezone("EST"))
+        self.pubtime = pubbedtime
 
     # Problem 6
 
 
 # TODO: BeforeTrigger and AfterTrigger
 class BeforeTrigger(TimeTrigger):
-    pass
+    def evaluate(self, story):
+        return story.get_pubdate().replace(tzinfo=pytz.timezone("EST")) < self.pubtime
+
 
 class AfterTrigger(TimeTrigger):
-    pass
+    def evaluate(self, story):
+        return story.get_pubdate().replace(tzinfo=pytz.timezone("EST")) > self.pubtime
 
 
 # COMPOSITE TRIGGERS
