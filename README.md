@@ -1,4 +1,4 @@
-# MIT6.0001-6.0002
+# MIT 6.0001-6.0002
 Solutions to MIT's 6.0001: Introduction To Computer Science And Programming In Python and 6.0002: Introduction To Computational Thinking And Data Science
 
 # 6.0001 can be found here: 
