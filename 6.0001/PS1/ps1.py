@@ -1,3 +1,4 @@
+# Part A
 running = True
 while True:
     try:
@@ -25,6 +26,7 @@ while current_savings < total_cost * portion_down_payment:
 print()
 print("Number of months:", months)
 
+# Part B
 running = True
 while running:
     try:
@@ -56,6 +58,7 @@ while current_savings < portion_downpayment:
 print()
 print("Number of months:", months)
 
+# Part C
 running = True
 while running:
     try:
